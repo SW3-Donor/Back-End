@@ -11,8 +11,7 @@ const mongoose = require("mongoose");
 const DbAddress = require("./config/key").MongoURI;
 
 const feedRoutes = require("./routes/feed");
-
-const uuid4 = require("uuid4"); //npm install uuid4
+const authRoutes = require("./routes/auth");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -50,12 +49,14 @@ app.use((req, res, next) => {
 });
 
 app.use("/feed", feedRoutes);
+app.use("/auth", authRoutes);
 
 app.use((error, req, res, next) => {
   console.log(error);
   const status = error.statusCode || 500;
   const message = error.message;
-  res.status(status).json({ message: message });
+  const data = error.data;
+  res.status(status).json({ message: message, data: data });
 });
 
 mongoose
