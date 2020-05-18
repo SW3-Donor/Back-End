@@ -6,7 +6,7 @@ const Bloodcontrol = require("../controllers/controlBlood");
 router.post("/register", Bloodcontrol.bloodRegister);
 
 router.get("/test", (req, res, next) => {
-  res.send("TEST!!!!!!!!!!!!!!!");
+  res.send("This is For TEST!!!!!!!!!!!!!!!");
 });
 
 module.exports = router;
