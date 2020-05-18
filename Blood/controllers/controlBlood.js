@@ -3,14 +3,15 @@ const Blood = require("../models/blood");
 const User = require("../models/user");
 
 exports.bloodRegister = (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    const error = new Error("유효하지 않습니다.");
-    error.statusCode = 422;
-    throw error;
-  }
-  const validnumber = req.body.number;
+  // const errors = validationResult(req);
+  // if (!errors.isEmpty()) {
+  //   const error = new Error("유효하지 않습니다.");
+  //   error.statusCode = 422;
+  //   throw error;
+  // }
+  const validnumber = req.body.number; //헌혈증번호
   let register;
+  let donorLength;
 
   const blood = new Blood({
     validnumber: validnumber,
@@ -27,7 +28,7 @@ exports.bloodRegister = (req, res, next) => {
       return user.save();
     })
     .then((result) => {
-      countBlood = result.bloods.length;
+      donorLength = result.bloods.length;
       res.status(201).json({
         message: "등록이 완료되었습니다.",
         blood: blood,

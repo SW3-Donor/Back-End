@@ -3,7 +3,7 @@ const PORT = 8080;
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const key =
-  "mongodb+srv://David:!sdh0919@cluster0-ozgw6.mongodb.net/test?retryWrites=true&w=majority";
+  "mongodb+srv://David:!sdh0919@cluster0-ozgw6.mongodb.net/Donor?retryWrites=true&w=majority";
 
 const app = express();
 
@@ -14,7 +14,7 @@ app.use(bodyParser.json());
 
 //Header setting
 app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Origin", "*", "http://localhost:3000");
   res.setHeader(
     "Access-Control-Allow-Headers",
     "GET, POST, PUT, PATCH, DELETE",
