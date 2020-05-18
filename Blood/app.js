@@ -8,6 +8,7 @@ const key =
 const app = express();
 
 const authRoutes = require("./routes/auth");
+const bloodRoutes = require("./routes/blood");
 
 app.use(bodyParser.json());
 
@@ -30,7 +31,8 @@ app.use((error, req, res, next) => {
   res.status(status).json({ message: message, data: data });
 });
 
-app.use("/blood", authRoutes);
+app.use("/auth", authRoutes);
+app.use("/blood", bloodRoutes);
 
 mongoose
   .connect(key, () => {

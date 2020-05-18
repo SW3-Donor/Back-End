@@ -19,7 +19,7 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
-  blood: [
+  bloods: [
     {
       type: Schema.Types.ObjectId,
       ref: "Blood",
