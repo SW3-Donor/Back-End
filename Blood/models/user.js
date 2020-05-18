@@ -19,6 +19,12 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
+  blood: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Blood",
+    },
+  ],
 });
 
 module.exports = mongoose.model("User", userSchema);

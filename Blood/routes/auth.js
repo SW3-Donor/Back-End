@@ -27,7 +27,7 @@ router.post(
 router.post("/login", Authcontrol.login);
 
 router.get("/test", (req, res, next) => {
-  console.log("Test for AWS");
+  res.send("This is for TEST!");
 });
 
 module.exports = router;
