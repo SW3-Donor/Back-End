@@ -6,7 +6,7 @@ const Schema = mongoose.Schema;
 
 const bloodSchema = new Schema(
   {
-    user: {
+    creator: {
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,

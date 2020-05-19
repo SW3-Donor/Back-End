@@ -15,15 +15,23 @@ exports.register = (req, res, next) => {
   const password = req.body.password;
   const phone = req.body.phone;
   const name = req.body.name;
-  bcrypt
-    .hash(password, 12)
-    .then((hashedPw) => {
-      console.log(hashedPw);
+  User.findOne({ email: email })
+    .then((isEqual) => {
+      if (isEqual) {
+        const error = new Error("이미 가입 되어있는 이메일 입니다.");
+        console.log(isEqual);
+        error.statusCode = 401;
+        throw error;
+      }
+      return bcrypt.hash(password, 12);
+    })
+    .then((result) => {
+      console.log(result);
       const user = new User({
         email: email,
-        password: hashedPw,
-        phone: phone,
+        password: result,
         name: name,
+        phone: phone,
       });
       return user.save();
     })
