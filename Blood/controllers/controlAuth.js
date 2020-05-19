@@ -4,13 +4,6 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 exports.register = (req, res, next) => {
-  // const errors = validationResult(req);
-  // if (!errors.isEmpty()) {
-  //   const error = new Error("유효 하지않음");
-  //   error.statusCode = 422;
-  //   error.data = errors.array();
-  //   throw error;
-  // }
   const email = req.body.email;
   const password = req.body.password;
   const phone = req.body.phone;
