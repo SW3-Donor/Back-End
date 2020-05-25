@@ -3,13 +3,6 @@ const Blood = require("../models/blood");
 const User = require("../models/user");
 
 exports.bloodRegister = (req, res, next) => {
-  // const errors = validationResult(req);
-  // if (!errors.isEmpty()) {
-  //   const error = new Error("유효하지 않습니다.");
-  //   error.statusCode = 422;
-  //   throw error;
-  // }
-
   const validnumber = req.body.number; //헌혈증번호
   console.log("number: ", req.body.number);
   let creator; //생성자

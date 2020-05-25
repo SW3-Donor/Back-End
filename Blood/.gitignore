@@ -1,2 +1,4 @@
 node_module
 Dockerfile
+docker.sh
+config

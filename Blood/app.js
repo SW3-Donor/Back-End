@@ -2,8 +2,7 @@ const express = require("express");
 const PORT = 8080;
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
-const key =
-  "mongodb+srv://David:!sdh0919@cluster0-ozgw6.mongodb.net/Donor?retryWrites=true&w=majority";
+const key = require("./config/keys").MongoURI;
 
 const app = express();
 
