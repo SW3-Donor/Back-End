@@ -2,8 +2,8 @@ const express = require("express");
 const PORT = 8080;
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
-const key =
-  "mongodb+srv://David:!sdh0919@cluster0-ozgw6.mongodb.net/Donor?retryWrites=true&w=majority";
+const key = require("./config/keys").MongoURI;
+const passport = require("./middleware/passportKakao");
 
 const app = express();
 
@@ -30,6 +30,9 @@ app.use((error, req, res, next) => {
   const data = error.data;
   res.status(status).json({ message: message, data: data });
 });
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use("/auth", authRoutes);
 app.use("/blood", bloodRoutes);
