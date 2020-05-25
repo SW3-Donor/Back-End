@@ -3,7 +3,10 @@ const PORT = 8080;
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const key = require("./config/keys").MongoURI;
+<<<<<<< HEAD
 const passport = require("./middleware/passportKakao");
+=======
+>>>>>>> 5679c057b0dac84badffa78acd6c34918bf0a652
 
 const app = express();
 
