@@ -4,22 +4,26 @@ const Schema = mongoose.Schema;
 
 const userSchema = new Schema(
   {
-    kakaoID: {
-      type: String,
-      required: true,
-    },
     name: {
       type: String,
       required: true,
     },
     email: {
       type: String,
-      // required: true,
+      required: true,
     },
     bloods: {
       type: String,
     },
     phone: {
+      type: String,
+      required: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    secretpassword: {
       type: String,
     },
   },

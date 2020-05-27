@@ -49,5 +49,8 @@ exports.bloodRegister = (req, res, next) => {
         err.statusCode = 500;
         throw err;
       }
+      next(err);
     });
 };
+
+exports.bloodTrade = (req, res, next) => {};

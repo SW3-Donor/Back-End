@@ -12,14 +12,12 @@ exports.register = (req, res, next) => {
     .then((isEqual) => {
       if (isEqual) {
         const error = new Error("이미 가입 되어있는 이메일 입니다.");
-        console.log(isEqual);
         error.statusCode = 401;
         throw error;
       }
       return bcrypt.hash(password, 12);
     })
     .then((result) => {
-      console.log(result);
       const user = new User({
         email: email,
         password: result,
@@ -29,15 +27,39 @@ exports.register = (req, res, next) => {
       return user.save();
     })
     .then((result) => {
-      res
-        .status(201)
-        .json({ message: "회원가입이 완료되었습니다.", userId: result._id });
+      res.status(201).json({ userId: result._id });
     })
     .catch((err) => {
       if (!err.statusCode) {
         err.statusCode = 500;
       }
       next();
+    });
+};
+
+exports.password = (req, res, next) => {
+  const password = req.body.password;
+  const userId = req.body.userId;
+  return bcrypt
+    .hash(password, 12)
+    .then((hashPw) => {
+      User.findById(userId)
+        .then((user) => {
+          user.secretpassword = hashPw;
+          return user.save();
+        })
+        .then((result) => {
+          res.status(201).json({
+            message: "회원가입 등록이 완료 되었습니다.",
+            userId: result._id,
+          });
+        });
+    })
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
     });
 };
 
@@ -76,6 +98,6 @@ exports.login = (req, res, next) => {
       if (!err.statusCode) {
         err.statusCode = 500;
       }
-      next();
+      next(err);
     });
 };

@@ -3,15 +3,14 @@ const PORT = 8080;
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const key = require("./config/keys").MongoURI;
-<<<<<<< HEAD
-const passport = require("./middleware/passportKakao");
-=======
->>>>>>> 5679c057b0dac84badffa78acd6c34918bf0a652
+
+// const passport = require("./middleware/passportKakao");
 
 const app = express();
 
 const authRoutes = require("./routes/auth");
 const bloodRoutes = require("./routes/blood");
+const postRoutes = require("./routes/post");
 
 app.use(bodyParser.json());
 
@@ -34,11 +33,12 @@ app.use((error, req, res, next) => {
   res.status(status).json({ message: message, data: data });
 });
 
-app.use(passport.initialize());
-app.use(passport.session());
+// app.use(passport.initialize());
+// app.use(passport.session());
 
 app.use("/auth", authRoutes);
 app.use("/blood", bloodRoutes);
+app.use("/board", postRoutes);
 
 mongoose
   .connect(key, () => {

@@ -4,6 +4,11 @@ const Schema = mongoose.Schema;
 
 const postSchema = new Schema(
   {
+    creator: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: "User",
+    },
     title: {
       type: String,
       required: true,
@@ -12,12 +17,7 @@ const postSchema = new Schema(
       type: String,
       required: true,
     },
-    creator: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-    imageUrl: {
+    count: {
       type: String,
       required: true,
     },

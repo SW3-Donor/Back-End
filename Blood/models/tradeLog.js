@@ -22,3 +22,5 @@ const tradeSchema = new Schema(
   },
   { timestamps: { currentTime: () => Date.now() + 3600000 * 9 } },
 );
+
+module.exports = mongoose.model("Log", tradeSchema);

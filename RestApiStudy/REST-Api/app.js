@@ -64,8 +64,12 @@ mongoose
     console.log(`DB connected`);
   })
   .then((result) => {
-    app.listen(PORT, () => {
+    const server = app.listen(PORT, () => {
       console.log(`Server running on ${PORT}`);
+    });
+    const io = require("./socket").init(server);
+    io.on("connection", (socekt) => {
+      console.log("Client connected");
     });
   })
   .catch((err) => console.log(err));
