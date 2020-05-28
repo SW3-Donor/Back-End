@@ -6,6 +6,8 @@ const Bloodcontrol = require("../controllers/controlBlood");
 
 router.post("/register", isToken, Bloodcontrol.bloodRegister);
 
+router.post("/send", isToken, Bloodcontrol.bloodTrade);
+
 router.get("/test", (req, res, next) => {
   res.send("This is For TEST!!!!!!!!!!!!!!!");
 });

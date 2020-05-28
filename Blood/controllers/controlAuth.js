@@ -23,6 +23,7 @@ exports.register = (req, res, next) => {
         password: result,
         name: name,
         phone: phone,
+        secondpassword: "-1",
       });
       return user.save();
     })
@@ -33,19 +34,19 @@ exports.register = (req, res, next) => {
       if (!err.statusCode) {
         err.statusCode = 500;
       }
-      next();
+      next(err);
     });
 };
 
 exports.password = (req, res, next) => {
-  const password = req.body.password;
+  const password = req.body.secondpassword;
   const userId = req.body.userId;
   return bcrypt
     .hash(password, 12)
     .then((hashPw) => {
       User.findById(userId)
         .then((user) => {
-          user.secretpassword = hashPw;
+          user.secondpassword = hashPw;
           return user.save();
         })
         .then((result) => {

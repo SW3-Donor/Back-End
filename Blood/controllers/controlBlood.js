@@ -1,17 +1,51 @@
 const { validationResult } = require("express-validator/check");
 const Blood = require("../models/blood");
 const User = require("../models/user");
+const TradeLog = require("../models/tradeLog");
+const bcrypt = require("bcryptjs");
+
+async function secondPw(req, next) {
+  const secondpassword = req.body.secondpassword;
+
+  if (!secondpassword || secondpassword === "-1") {
+    const error = new Error("2차비번을 설정해주세요");
+    error.statusCode = 404;
+    throw error;
+  }
+  User.findOne({ _id: req.userId })
+    .then((user) => {
+      console.log(user.secondpassword);
+      return bcrypt.compare(secondpassword, user.secondpassword);
+    })
+    .then((isEqual) => {
+      if (!isEqual) {
+        const error = new Error("2차 비밀번호가 일치하지 않습니다.");
+        this.flag = false;
+        console.log(this.flag);
+        error.statusCode = 401;
+        throw error;
+      }
+    })
+    .catch((err) => {
+      console.log("처리가 안되나요?", err);
+      flag = false;
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
+}
 
 exports.bloodRegister = (req, res, next) => {
   const validnumber = req.body.number; //헌혈증번호
-  console.log("number: ", req.body.number);
-  let creator; //생성자
+  const creator = req.userId; //생성자
   let donorlength; //헌혈증 개수
-  console.log(req.userId);
+
   const blood = new Blood({
-    creator: req.userId,
+    creator: creator,
     validnumber: validnumber,
   });
+
   Blood.findOne({ validnumber: validnumber })
     .then((isEqual) => {
       if (isEqual) {
@@ -22,18 +56,16 @@ exports.bloodRegister = (req, res, next) => {
       return blood.save();
     })
     .then((donation) => {
-      console.log(donation.creator);
       return Blood.find({ creator: donation.creator });
     })
     .then((blood) => {
+      console.log("제발", creator);
       donorlength = blood.length;
-      console.log(donorlength);
-      creator = req.userId;
       return User.findOne({ _id: creator });
     })
     .then((user) => {
+      console.log("유저가존재하니?", user);
       user.bloods = donorlength;
-      console.log(user.bloods);
       return user.save();
     })
     .then((result) => {
@@ -53,4 +85,71 @@ exports.bloodRegister = (req, res, next) => {
     });
 };
 
-exports.bloodTrade = (req, res, next) => {};
+exports.bloodTrade = (req, res, next) => {
+  secondPw(req, next);
+  const sender = req.userId;
+  const receiver = req.body.receiver;
+  const count = req.body.count;
+  const changeblood = [];
+  let senderlength;
+  let receiverlength;
+  let number;
+  let validnumber;
+
+  User.findById({ _id: sender })
+    .then((user) => {
+      number = user.count - count;
+      if (number < 0) {
+        const error = new Error(
+          `보낼 수 있는 헌혈증의 개수는 ${number}개 입니다.`,
+        );
+        error.statuscode = 401;
+        throw error;
+      }
+      return Blood.find({ creator: user._id });
+    })
+    .then((bloods) => {
+      for (i = 0; i < number; i++) {
+        bloods[i].creator = receiver;
+        changeblood.push(bloods[i]);
+      }
+      return bloods.save();
+    })
+    .then((success) => {
+      Blood.find({ creator: sender }).then((sender) => {
+        senderlength = sender.length;
+      });
+      Blood.find({ creator: receiver }).then((receiver) => {
+        receiverlength = receiver.length;
+      });
+    })
+    .then((result) => {
+      res.status(201).json({
+        message: "거래가 완료 되었습니다.",
+        senderlength: senderlength,
+        receiverlength: receiverlength,
+      });
+    })
+    .then((trade) => {
+      const tradeLog = new TradeLog({
+        sender: sender,
+        receiver: receiver,
+        validnumber: validnumber,
+      });
+      changeblood.forEach((element) => {
+        validnumber = element.validnumber;
+        tradeLog.validnumber = validnumber;
+        tradeLog.save();
+      });
+      return tradeLog;
+    })
+    .then((log) => {
+      res.status(201).json({ message: "거래 목록입니다.", tradelog: tradeLog });
+    })
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
+};

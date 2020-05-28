@@ -25,6 +25,13 @@ app.use((req, res, next) => {
   next();
 });
 
+// app.use(passport.initialize());
+// app.use(passport.session());
+
+app.use("/auth", authRoutes);
+app.use("/blood", bloodRoutes);
+app.use("/board", postRoutes);
+
 app.use((error, req, res, next) => {
   console.log(error);
   const status = error.statusCode || 500;
@@ -32,13 +39,6 @@ app.use((error, req, res, next) => {
   const data = error.data;
   res.status(status).json({ message: message, data: data });
 });
-
-// app.use(passport.initialize());
-// app.use(passport.session());
-
-app.use("/auth", authRoutes);
-app.use("/blood", bloodRoutes);
-app.use("/board", postRoutes);
 
 mongoose
   .connect(key, () => {
