@@ -4,34 +4,6 @@ const User = require("../models/user");
 const TradeLog = require("../models/tradeLog");
 const bcrypt = require("bcryptjs");
 
-function secondPw(req, next) {
-  const secondpassword = req.body.secondpassword;
-
-  if (!secondpassword || secondpassword === "-1") {
-    const error = new Error("2차비번을 설정해주세요");
-    error.statusCode = 404;
-    throw error;
-  }
-  User.findOne({ _id: req.userId })
-    .then((user) => {
-      console.log(user.secondpassword);
-      return bcrypt.compare(secondpassword, user.secondpassword);
-    })
-    .then((isEqual) => {
-      if (!isEqual) {
-        const error = new Error("2차 비밀번호가 일치하지 않습니다.");
-        error.statusCode = 401;
-        throw error;
-      }
-    })
-    .catch((err) => {
-      if (!err.statusCode) {
-        err.statusCode = 500;
-      }
-      next(err);
-    });
-}
-
 exports.bloodRegister = (req, res, next) => {
   const validnumber = req.body.number; //헌혈증번호
   const creator = req.userId; //생성자
