@@ -4,7 +4,7 @@ const User = require("../models/user");
 const TradeLog = require("../models/tradeLog");
 const bcrypt = require("bcryptjs");
 
-async function secondPw(req, next) {
+function secondPw(req, next) {
   const secondpassword = req.body.secondpassword;
 
   if (!secondpassword || secondpassword === "-1") {
@@ -20,15 +20,11 @@ async function secondPw(req, next) {
     .then((isEqual) => {
       if (!isEqual) {
         const error = new Error("2차 비밀번호가 일치하지 않습니다.");
-        this.flag = false;
-        console.log(this.flag);
         error.statusCode = 401;
         throw error;
       }
     })
     .catch((err) => {
-      console.log("처리가 안되나요?", err);
-      flag = false;
       if (!err.statusCode) {
         err.statusCode = 500;
       }
