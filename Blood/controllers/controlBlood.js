@@ -2,17 +2,18 @@ const { validationResult } = require("express-validator/check");
 const Blood = require("../models/blood");
 const User = require("../models/user");
 const TradeLog = require("../models/tradeLog");
-const bcrypt = require("bcryptjs");
 
 exports.bloodRegister = (req, res, next) => {
   const validnumber = req.body.number; //헌혈증번호
+  console.log(validnumber);
   const creator = req.userId; //생성자
   let donorlength; //헌혈증 개수
-
   const blood = new Blood({
     creator: creator,
     validnumber: validnumber,
   });
+
+  console.log("여기를 한번 찍어봐야겠다.");
 
   Blood.findOne({ validnumber: validnumber })
     .then((isEqual) => {

@@ -48,10 +48,10 @@ exports.writePost = (req, res, next) => {
     .catch((err) => {
       if (!err.statusCode) {
         err.statusCode = 500;
+        throw err;
       }
-      throw err;
+      next(err);
     });
-  next(err);
 };
 
 exports.showPostId = (req, res, next) => {

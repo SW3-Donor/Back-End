@@ -1,29 +1,20 @@
 const User = require("../models/user");
+const bcrypt = require("bcryptjs");
 
-module.exports = (req, next) => {
+module.exports = async (req, res, next) => {
   const secondpassword = req.body.secondpassword;
 
-  if (!secondpassword || secondpassword === "-1") {
-    const error = new Error("2차비번을 설정해주세요");
-    error.statusCode = 404;
+  const user = await User.findOne({ _id: req.userId });
+  let isEqual;
+  try {
+    isEqual = await bcrypt.compare(secondpassword, user.secondpassword);
+  } catch (err) {
+    err.statusCode = 500;
+    next(err);
+  }
+  if (!isEqual) {
+    const error = new Error("2차 비밀번호가 일치하지 않습니다.");
     throw error;
   }
-  User.findOne({ _id: req.userId })
-    .then((user) => {
-      console.log(user.secondpassword);
-      return bcrypt.compare(secondpassword, user.secondpassword);
-    })
-    .then((isEqual) => {
-      if (!isEqual) {
-        const error = new Error("2차 비밀번호가 일치하지 않습니다.");
-        error.statusCode = 401;
-        throw error;
-      }
-    })
-    .catch((err) => {
-      if (!err.statusCode) {
-        err.statusCode = 500;
-      }
-      next(err);
-    });
+  next();
 };
