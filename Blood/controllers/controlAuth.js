@@ -83,6 +83,7 @@ exports.register = async (req, res, next) => {
       name: name,
       phone: phone,
       secondpassword: "-1",
+      bloods: 0,
     });
     await user.save();
     res.status(201).json({

@@ -14,7 +14,7 @@ module.exports = async (req, res, next) => {
   }
   if (!isEqual) {
     const error = new Error("2차 비밀번호가 일치하지 않습니다.");
-    throw error;
+    next(error);
   }
   next();
 };

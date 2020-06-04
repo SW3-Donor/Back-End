@@ -5,15 +5,12 @@ const TradeLog = require("../models/tradeLog");
 
 exports.bloodRegister = (req, res, next) => {
   const validnumber = req.body.number; //헌혈증번호
-  console.log(validnumber);
   const creator = req.userId; //생성자
   let donorlength; //헌혈증 개수
   const blood = new Blood({
     creator: creator,
     validnumber: validnumber,
   });
-
-  console.log("여기를 한번 찍어봐야겠다.");
 
   Blood.findOne({ validnumber: validnumber })
     .then((isEqual) => {
@@ -28,12 +25,10 @@ exports.bloodRegister = (req, res, next) => {
       return Blood.find({ creator: donation.creator });
     })
     .then((blood) => {
-      console.log("제발", creator);
       donorlength = blood.length;
       return User.findOne({ _id: creator });
     })
     .then((user) => {
-      console.log("유저가존재하니?", user);
       user.bloods = donorlength;
       return user.save();
     })
@@ -55,10 +50,9 @@ exports.bloodRegister = (req, res, next) => {
 };
 
 exports.bloodTrade = (req, res, next) => {
-  secondPw(req, next);
   const sender = req.userId;
-  const receiver = req.body.receiver;
-  const count = req.body.count;
+  let receiver = req.body.receiver;
+  const count = parseInt(req.body.count);
   const changeblood = [];
   let senderlength;
   let receiverlength;
@@ -67,10 +61,10 @@ exports.bloodTrade = (req, res, next) => {
 
   User.findById({ _id: sender })
     .then((user) => {
-      number = user.count - count;
+      number = user.bloods - count;
       if (number < 0) {
         const error = new Error(
-          `보낼 수 있는 헌혈증의 개수는 ${number}개 입니다.`,
+          `보낼 수 있는 헌혈증의 개수는 ${user.bloods}개 입니다.`,
         );
         error.statuscode = 401;
         throw error;
@@ -78,19 +72,38 @@ exports.bloodTrade = (req, res, next) => {
       return Blood.find({ creator: user._id });
     })
     .then((bloods) => {
-      for (i = 0; i < number; i++) {
-        bloods[i].creator = receiver;
-        changeblood.push(bloods[i]);
-      }
-      return bloods.save();
+      User.findOne({ email: receiver })
+        .then((user) => {
+          return (receiver = user._id);
+        })
+        .then((id) => {
+          for (let i = 0; i < count; i++) {
+            bloods[i].creator = id;
+            changeblood.push(bloods[i]);
+            bloods[i].save();
+          }
+        });
+      Blood.find;
     })
     .then((success) => {
-      Blood.find({ creator: sender }).then((sender) => {
-        senderlength = sender.length;
-      });
-      Blood.find({ creator: receiver }).then((receiver) => {
-        receiverlength = receiver.length;
-      });
+      Blood.find({ creator: sender })
+        .then((send) => {
+          console.log(send);
+          senderlength = send.length;
+          User.findById({ _id: sender }).then((user) => {
+            user.bloods = senderlength;
+            user.save();
+          });
+        })
+        .then((result) => {
+          Blood.find({ creator: receiver }).then((get) => {
+            receiverlength = get.length;
+            User.findById({ _id: receiver }).then((user) => {
+              user.bloods = receiverlength;
+              user.save();
+            });
+          });
+        });
     })
     .then((result) => {
       res.status(201).json({

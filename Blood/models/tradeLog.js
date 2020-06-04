@@ -15,8 +15,7 @@ const tradeSchema = new Schema(
       required: true,
     },
     validnumber: {
-      type: Schema.Types.ObjectId,
-      ref: "Blood",
+      type: String,
       required: true,
     },
   },
