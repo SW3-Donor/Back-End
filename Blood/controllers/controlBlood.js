@@ -83,16 +83,16 @@ exports.bloodTrade = (req, res, next) => {
             bloods[i].save();
           }
         });
-      Blood.find;
+      return Blood.find();
     })
     .then((success) => {
+      console.log("이것이 무엇인가", success);
       Blood.find({ creator: sender })
         .then((send) => {
-          console.log(send);
           senderlength = send.length;
           User.findById({ _id: sender }).then((user) => {
             user.bloods = senderlength;
-            user.save();
+            return user.save();
           });
         })
         .then((result) => {
@@ -100,19 +100,14 @@ exports.bloodTrade = (req, res, next) => {
             receiverlength = get.length;
             User.findById({ _id: receiver }).then((user) => {
               user.bloods = receiverlength;
-              user.save();
+              return user.save();
             });
           });
         });
-    })
-    .then((result) => {
-      res.status(201).json({
-        message: "거래가 완료 되었습니다.",
-        senderlength: senderlength,
-        receiverlength: receiverlength,
-      });
+      return changeblood;
     })
     .then((trade) => {
+      console.log("너는값이 있니", trade);
       const tradeLog = new TradeLog({
         sender: sender,
         receiver: receiver,
@@ -126,7 +121,12 @@ exports.bloodTrade = (req, res, next) => {
       return tradeLog;
     })
     .then((log) => {
-      res.status(201).json({ message: "거래 목록입니다.", tradelog: tradeLog });
+      res.status(201).json({
+        message: "거래가 성공하였습니다, 거래 목록입니다.",
+        tradelog: log,
+        senderlength: senderlength,
+        receiverlength: receiverlength,
+      });
     })
     .catch((err) => {
       if (!err.statusCode) {

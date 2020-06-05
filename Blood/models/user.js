@@ -14,6 +14,7 @@ const userSchema = new Schema(
     },
     bloods: {
       type: String,
+      required: true,
     },
     phone: {
       type: String,
