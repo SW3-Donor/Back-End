@@ -104,7 +104,6 @@ exports.bloodTrade = (req, res, next) => {
             });
           });
         });
-      return changeblood;
     })
     .then((trade) => {
       console.log("너는값이 있니", trade);
@@ -113,6 +112,7 @@ exports.bloodTrade = (req, res, next) => {
         receiver: receiver,
         validnumber: validnumber,
       });
+      for (let i = 0; let < changeblood.length; i++) {}
       changeblood.forEach((element) => {
         validnumber = element.validnumber;
         tradeLog.validnumber = validnumber;
