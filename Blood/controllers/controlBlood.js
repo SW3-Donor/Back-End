@@ -92,10 +92,38 @@ exports.bloodTrade = async (req, res, next) => {
     const receiveBloods = await Blood.find({ creator: receiveUser._id });
     receiveUser.bloods = receiveBloods.length;
     await receiveUser.save();
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+  req.sender = sendUser;
+  req.receiver = receiveUser;
+  req.changeblood = changeblood;
+  next();
+};
+
+exports.bloodRecord = async (req, res, next) => {
+  const changeblood = req.changeblood;
+  const sender = req.sender;
+  const receiver = req.receiver;
+  let tradelog = [];
+  try {
+    for (let i = 0; i < changeblood.length; i++) {
+      const tradeLog = new TradeLog({
+        sender: sender._id,
+        receiver: receiver._id,
+        validnumber: changeblood[i].validnumber,
+      });
+      tradelog.push(await tradeLog.save());
+    }
     res.status(200).json({
-      message: "헌혈증 거래가 성공 하였습니다.",
-      sendUserlength: sendUser.bloods,
-      receiveUserlength: receiveUser.bloods,
+      message:
+        "헌혈증 거래가 성공 하였습니다. 보내는건 기록과 각 유저 헌혈증 갯수입니다.",
+      log: tradelog,
+      sendUserlength: sender.bloods,
+      receiveUserlength: receiver.bloods,
     });
   } catch (err) {
     if (!err.statusCode) {
@@ -103,15 +131,4 @@ exports.bloodTrade = async (req, res, next) => {
     }
     next(err);
   }
-  req.sender = sendUser._id;
-  req.receiver = receiveUser._id;
-  req.changeblood = changeblood;
-  next();
-};
-
-exports.bloodRecord = async (req, res, next) => {
-  console.log(req.changeblood);
-  console.log("바뀐거", req.changeblood);
-  console.log("보낸놈", req.sender);
-  console.log("받는놈", req.receiver);
 };
