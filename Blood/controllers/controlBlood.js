@@ -49,89 +49,69 @@ exports.bloodRegister = (req, res, next) => {
     });
 };
 
-exports.bloodTrade = (req, res, next) => {
+exports.bloodTrade = async (req, res, next) => {
   const sender = req.userId;
-  let receiver = req.body.receiver;
+  const receiver = req.body.receiver;
   const count = parseInt(req.body.count);
   const changeblood = [];
-  let senderlength;
-  let receiverlength;
-  let number;
-  let validnumber;
 
-  User.findById({ _id: sender })
-    .then((user) => {
-      number = user.bloods - count;
-      if (number < 0) {
-        const error = new Error(
-          `보낼 수 있는 헌혈증의 개수는 ${user.bloods}개 입니다.`,
-        );
-        error.statuscode = 401;
-        throw error;
-      }
-      return Blood.find({ creator: user._id });
-    })
-    .then((bloods) => {
-      User.findOne({ email: receiver })
-        .then((user) => {
-          return (receiver = user._id);
-        })
-        .then((id) => {
-          for (let i = 0; i < count; i++) {
-            bloods[i].creator = id;
-            changeblood.push(bloods[i]);
-            bloods[i].save();
-          }
-        });
-      return Blood.find();
-    })
-    .then((success) => {
-      console.log("이것이 무엇인가", success);
-      Blood.find({ creator: sender })
-        .then((send) => {
-          senderlength = send.length;
-          User.findById({ _id: sender }).then((user) => {
-            user.bloods = senderlength;
-            return user.save();
-          });
-        })
-        .then((result) => {
-          Blood.find({ creator: receiver }).then((get) => {
-            receiverlength = get.length;
-            User.findById({ _id: receiver }).then((user) => {
-              user.bloods = receiverlength;
-              return user.save();
-            });
-          });
-        });
-    })
-    .then((trade) => {
-      console.log("너는값이 있니", trade);
-      const tradeLog = new TradeLog({
-        sender: sender,
-        receiver: receiver,
-        validnumber: validnumber,
-      });
-      for (let i = 0; let < changeblood.length; i++) {}
-      changeblood.forEach((element) => {
-        validnumber = element.validnumber;
-        tradeLog.validnumber = validnumber;
-        tradeLog.save();
-      });
-      return tradeLog;
-    })
-    .then((log) => {
-      res.status(201).json({
-        message: "거래가 성공하였습니다, 거래 목록입니다.",
-        tradelog: log,
-        senderlength: senderlength,
-        receiverlength: receiverlength,
-      });
-    })
-    .catch((err) => {
-      if (!err.statusCode) {
-        err.statusCode = 500;
-      }
-      next(err);
+  //sendUser 보내는 사람
+  const sendUser = await User.findById({ _id: sender }); //헌혈증의 보낼 수 있는 개수 파악
+  const receiveUser = await User.findOne({ email: receiver });
+  const number = sendUser.bloods - count;
+  try {
+    if (number < 0) {
+      const error = new Error(
+        `보낼 수 있는 헌혈증의 개수는 ${sendUser.bloods}개 입니다.`,
+      );
+      error.statuscode = 401;
+      throw error;
+    }
+
+    if (sendUser.email === receiver) {
+      const error = new Error("나한테 헌혈증을 어떻게 보내니? 꺼뎌");
+      error.statusCode = 401;
+      throw error;
+    }
+
+    //헌혈증 보내기 bloods는 보내는 사람의 헌혈증
+    let sendBloods = await Blood.find({ creator: sendUser._id });
+    //recieveUser 받는사람
+
+    //헌혈증 받는 유저 찾고 보내는 사람의 헌혈증 id를 바꿔준다.
+    for (let i = 0; i < count; i++) {
+      sendBloods[i].creator = receiveUser._id;
+      changeblood.push(sendBloods[i]);
+      await sendBloods[i].save();
+    }
+    sendBloods = await Blood.find({ creator: sendUser._id });
+    // 보낸 사람의 헌혈증 소유 갯수를 바꿔준다.
+    sendUser.bloods = sendBloods.length;
+    await sendUser.save();
+    //받는 사람 헌혈증 갯수를 바꿔준다.
+    const receiveBloods = await Blood.find({ creator: receiveUser._id });
+    receiveUser.bloods = receiveBloods.length;
+    await receiveUser.save();
+    res.status(200).json({
+      message: "헌혈증 거래가 성공 하였습니다.",
+      sendUserlength: sendUser.bloods,
+      receiveUserlength: receiveUser.bloods,
     });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+  req.sender = sendUser._id;
+  req.receiver = receiveUser._id;
+  req.changeblood = changeblood;
+  next();
+};
+
+exports.bloodRecord = async (req, res, next) => {
+  console.log(req.changeblood);
+  console.log("바뀐거", req.changeblood);
+  console.log("보낸놈", req.sender);
+  console.log("받는놈", req.receiver);
 };

@@ -7,7 +7,13 @@ const Bloodcontrol = require("../controllers/controlBlood");
 
 router.post("/register", isToken, isSecond, Bloodcontrol.bloodRegister);
 
-router.post("/send", isToken, isSecond, Bloodcontrol.bloodTrade);
+router.post(
+  "/send",
+  isToken,
+  isSecond,
+  Bloodcontrol.bloodTrade,
+  Bloodcontrol.bloodRecord,
+);
 
 router.get("/test", (req, res, next) => {
   res.send("This is For TEST!!!!!!!!!!!!!!!");
