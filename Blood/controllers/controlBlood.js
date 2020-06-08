@@ -112,8 +112,8 @@ exports.bloodRecord = async (req, res, next) => {
   try {
     for (let i = 0; i < changeblood.length; i++) {
       const tradeLog = new TradeLog({
-        sender: sender._id,
-        receiver: receiver._id,
+        sender: sender.email,
+        receiver: receiver.email,
         validnumber: changeblood[i].validnumber,
       });
       tradelog.push(await tradeLog.save());

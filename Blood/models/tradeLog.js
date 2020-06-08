@@ -5,13 +5,11 @@ const Schema = mongoose.Schema;
 const tradeSchema = new Schema(
   {
     sender: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
+      type: String,
       required: true,
     },
     receiver: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
+      type: String,
       required: true,
     },
     validnumber: {
