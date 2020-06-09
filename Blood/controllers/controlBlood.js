@@ -1,52 +1,45 @@
-const { validationResult } = require("express-validator/check");
 const Blood = require("../models/blood");
 const User = require("../models/user");
 const TradeLog = require("../models/tradeLog");
 
-exports.bloodRegister = (req, res, next) => {
+exports.bloodRegister = async (req, res, next) => {
   const validnumber = req.body.number; //헌혈증번호
   const creator = req.userId; //생성자
-  let donorlength; //헌혈증 개수
   const blood = new Blood({
     creator: creator,
     validnumber: validnumber,
   });
 
-  Blood.findOne({ validnumber: validnumber })
-    .then((isEqual) => {
-      if (isEqual) {
-        const error = new Error("이미 존재하는 번호 입니다.");
-        error.statusCode = 401;
-        throw error;
-      }
-      return blood.save();
-    })
-    .then((donation) => {
-      return Blood.find({ creator: donation.creator });
-    })
-    .then((blood) => {
-      donorlength = blood.length;
-      return User.findOne({ _id: creator });
-    })
-    .then((user) => {
-      user.bloods = donorlength;
-      return user.save();
-    })
-    .then((result) => {
-      res.status(201).json({
-        message: "헌혈증 등록이 완료되었습니다.",
-        blood: blood,
-        donorlength: donorlength,
-        creator: { _id: creator._id, name: creator.name, count: donorlength },
-      });
-    })
-    .catch((err) => {
-      if (!err.statusCode) {
-        err.statusCode = 500;
-        throw err;
-      }
-      next(err);
+  try {
+    const isEqual = await Blood.findOne({ validnumber: validnumber });
+
+    if (isEqual) {
+      const error = new Error("이미 존재하는 번호 입니다.");
+      error.statusCode = 401;
+      throw error;
+    }
+
+    const donation = await blood.save();
+    const donor = await Blood.find({ creator: donation.creator });
+    const donorlength = donor.length;
+
+    const user = await User.findOne({ _id: creator });
+    user.bloods = donorlength;
+    await user.save();
+
+    res.status(201).json({
+      message: "헌혈증 등록이 완료되었습니다.",
+      blood: blood,
+      donorlength: donorlength,
+      creator: { _id: creator._id, name: creator.name, count: donorlength },
     });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+      throw err;
+    }
+    next(err);
+  }
 };
 
 exports.bloodTrade = async (req, res, next) => {
