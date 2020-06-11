@@ -1,28 +1,6 @@
 const User = require("../models/user");
-const { validationResult } = require("express-validator/check");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-
-exports.password = async (req, res, next) => {
-  const password = req.body.secondpassword;
-  const userId = req.body.userId;
-
-  try {
-    const hashPw = await bcrypt.hash(password, 12);
-    const user = await User.findById(userId);
-    user.secondpassword = hashPw;
-    await user.save();
-    res.status(201).json({
-      message: "회원가입 등록이 완료 되었습니다.",
-      userId: user._id,
-    });
-  } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
-    next(err);
-  }
-};
 
 exports.register = async (req, res, next) => {
   const email = req.body.email;
@@ -56,10 +34,32 @@ exports.register = async (req, res, next) => {
   }
 };
 
+exports.password = async (req, res, next) => {
+  const password = req.body.secondpassword;
+  const userId = req.body.userId;
+
+  try {
+    const hashPw = await bcrypt.hash(password, 12);
+    const user = await User.findById(userId);
+    user.secondpassword = hashPw;
+    await user.save();
+    res.status(201).json({
+      message: "회원가입 등록이 완료 되었습니다.",
+      userId: user._id,
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
 exports.login = async (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
   let loginUser;
+  console.log(req.userId);
 
   try {
     const user = await User.findOne({ email: email });
