@@ -35,16 +35,34 @@ exports.register = async (req, res, next) => {
 };
 
 exports.password = async (req, res, next) => {
-  const password = req.body.secondpassword;
-  const userId = req.body.userId;
+  const authHeader = req.get("Authorization");
+  const token = authHeader.split(" ")[1];
+  let decodedToken;
 
+  try {
+    decodedToken = await jwt.verify(token, "somesupersecretsecret");
+  } catch (err) {
+    err.statusCode = 500;
+    throw err;
+  }
+  if (!decodedToken) {
+    const error = new Error("인증되지 않았습니다. ");
+    error.statusCode = 401;
+    throw error;
+  }
+
+  const password = req.body.secondpassword;
+  let userId = req.body.userId;
+  if (decodedToken) {
+    userId = decodedToken.userId;
+  }
   try {
     const hashPw = await bcrypt.hash(password, 12);
     const user = await User.findById(userId);
     user.secondpassword = hashPw;
     await user.save();
     res.status(201).json({
-      message: "회원가입 등록이 완료 되었습니다.",
+      message: "2차 비밀번호 등록이 완료 되었습니다.",
       userId: user._id,
     });
   } catch (err) {
@@ -59,7 +77,6 @@ exports.login = async (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
   let loginUser;
-  console.log(req.userId);
 
   try {
     const user = await User.findOne({ email: email });

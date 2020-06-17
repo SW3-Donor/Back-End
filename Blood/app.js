@@ -1,5 +1,5 @@
 const express = require("express");
-const PORT = 8080;
+const PORT = 5000;
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const key = require("./config/keys").MongoURI;
@@ -11,6 +11,7 @@ const app = express();
 const authRoutes = require("./routes/auth");
 const bloodRoutes = require("./routes/blood");
 const postRoutes = require("./routes/post");
+const profileRoutes = require("./routes/profile");
 
 app.use(bodyParser.json());
 
@@ -31,6 +32,7 @@ app.use((req, res, next) => {
 app.use("/auth", authRoutes);
 app.use("/blood", bloodRoutes);
 app.use("/board", postRoutes);
+app.use("/profile", profileRoutes);
 
 app.use((error, req, res, next) => {
   const status = error.statusCode || 500;
