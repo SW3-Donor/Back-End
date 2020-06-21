@@ -2,8 +2,6 @@ const Blood = require("../models/blood");
 const User = require("../models/user");
 const TradeLog = require("../models/tradeLog");
 const Post = require("../models/post");
-const isSecond = require("../middleware/is-second");
-const post = require("../models/post");
 
 exports.bloodRegister = async (req, res, next) => {
   const validnumber = req.body.number; //헌혈증번호
@@ -21,7 +19,6 @@ exports.bloodRegister = async (req, res, next) => {
       error.statusCode = 401;
       throw error;
     }
-
     const donation = await blood.save();
     const donor = await Blood.find({ creator: donation.creator });
     const donorlength = donor.length;
@@ -39,7 +36,6 @@ exports.bloodRegister = async (req, res, next) => {
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
-      throw err;
     }
     next(err);
   }
@@ -84,7 +80,6 @@ exports.bloodRecord = async (req, res, next) => {
       const post = await Post.findById(postId);
       post.received = changeblood.length;
       await post.save();
-
       res.status(200).json({
         message:
           "헌혈증 거래가 성공 하였습니다. 보내는건 기록과 각 유저 헌혈증 갯수입니다.",
@@ -113,11 +108,8 @@ exports.bloodRecord = async (req, res, next) => {
 async function tradeBlood(req, postId, receiveUser, next) {
   const sender = req.userId;
   const count = parseInt(req.body.count);
-
   const changeblood = [];
-
   const sendUser = await User.findById(sender); //헌혈증의 보낼 수 있는 개수 파악
-
   const number = sendUser.bloods - count;
 
   //sendUser 보내는 사람
