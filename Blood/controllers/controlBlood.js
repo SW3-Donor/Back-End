@@ -78,7 +78,7 @@ exports.bloodRecord = async (req, res, next) => {
     }
     if (postId != null) {
       const post = await Post.findById(postId);
-      post.received += changeblood.length;
+      post.received = parseInt(post.received) + changeblood.length;
       await post.save();
       res.status(200).json({
         message:
