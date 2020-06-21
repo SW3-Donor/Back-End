@@ -39,28 +39,28 @@ exports.password = async (req, res, next) => {
   let decodedToken;
   let userId;
   const password = req.body.secondpassword;
-  if (authHeader) {
-    const token = authHeader.split(" ")[1];
+  console.log("비번", password);
+  if (authHeader.split(" ")[1] != "null") {
+    const token = await authHeader.split(" ")[1];
     try {
       decodedToken = await jwt.verify(token, "somesupersecretsecret");
     } catch (err) {
       err.statusCode = 500;
       throw err;
     }
+  }
+
+  if (decodedToken) {
+    userId = decodedToken.userId;
   } else {
     userId = req.body.userId;
   }
-  if (!decodedToken) {
-    const error = new Error("인증되지 않았습니다. ");
-    error.statusCode = 401;
-    throw error;
-  } else {
-    userId = decodedToken.userId;
-  }
-
+  console.log("유저아이디", userId);
   try {
     const hashPw = await bcrypt.hash(password, 12);
+    console.log("암호됫냐", hashPw);
     const user = await User.findById(userId);
+    console.log("유저", user);
     user.secondpassword = hashPw;
     await user.save();
     res.status(201).json({
@@ -90,7 +90,7 @@ exports.login = async (req, res, next) => {
     }
 
     loginUser = user;
-    const isEqual = bcrypt.compare(password, user.password);
+    const isEqual = await bcrypt.compare(password, user.password);
     if (!isEqual) {
       const error = new Error("이메일 또는 비밀번호가 일치하지 않습니다.");
       error.statusCode = 401;
