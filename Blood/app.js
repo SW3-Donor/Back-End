@@ -1,5 +1,5 @@
 const express = require("express");
-const PORT = 5000;
+const PORT = 8080;
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const key = require("./config/keys").MongoURI;

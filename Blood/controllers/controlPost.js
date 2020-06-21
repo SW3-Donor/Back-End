@@ -26,13 +26,21 @@ exports.writePost = async (req, res, next) => {
   const title = req.body.title;
   const content = req.body.content;
   const count = req.body.count;
+  const user = await User.findById(req.userId);
+  const name = user.name;
+
+  console.log("이름", name);
 
   const post = new Post({
     creator: creator,
+    name: name,
     title: title,
     content: content,
     count: count,
+    received: "0",
   });
+  console.log(post);
+
   try {
     await post.save();
 

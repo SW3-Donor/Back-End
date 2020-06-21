@@ -21,6 +21,15 @@ const postSchema = new Schema(
       type: String,
       required: true,
     },
+    received: {
+      type: String,
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+      ref: "User",
+    },
   },
   { timestamps: { currentTime: () => Date.now() + 3600000 * 9 } },
 );
