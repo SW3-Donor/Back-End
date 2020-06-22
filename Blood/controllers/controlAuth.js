@@ -39,7 +39,7 @@ exports.password = async (req, res, next) => {
   let decodedToken;
   let userId;
   const password = req.body.secondpassword;
-  console.log("비번", password);
+
   if (authHeader.split(" ")[1] != "null") {
     const token = await authHeader.split(" ")[1];
     try {
@@ -55,12 +55,10 @@ exports.password = async (req, res, next) => {
   } else {
     userId = req.body.userId;
   }
-  console.log("유저아이디", userId);
+
   try {
     const hashPw = await bcrypt.hash(password, 12);
-    console.log("암호됫냐", hashPw);
     const user = await User.findById(userId);
-    console.log("유저", user);
     user.secondpassword = hashPw;
     await user.save();
     res.status(201).json({

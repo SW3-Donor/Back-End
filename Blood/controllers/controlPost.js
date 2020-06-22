@@ -1,5 +1,6 @@
 const User = require("../models/user");
 const Post = require("../models/post");
+const post = require("../models/post");
 
 exports.showPosts = async (req, res, next) => {
   let totalItems;
@@ -118,9 +119,12 @@ exports.updatePostId = async (req, res, next) => {
 };
 
 exports.deletePostId = async (req, res, next) => {
+  console.log(1111111111);
   const { postId } = req.params;
+  console.log("왜", postId);
   try {
-    const post = Post.findById(postId);
+    const post = await Post.findById(postId);
+    console.log(post);
 
     if (!post) {
       const error = new Error("게시글이 존재하지 않습니다.");
@@ -134,7 +138,7 @@ exports.deletePostId = async (req, res, next) => {
       throw error;
     }
 
-    await Post.findByIdAndRemove(post);
+    await Post.findByIdAndRemove(postId);
     res.status(200).json({ message: "삭제 완료" });
   } catch (err) {
     if (!err.statusCode) {
