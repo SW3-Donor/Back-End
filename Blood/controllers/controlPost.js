@@ -86,7 +86,7 @@ exports.showPostId = async (req, res, next) => {
 exports.updatePostId = async (req, res, next) => {
   const { postId } = req.params;
   try {
-    const post = Post.findById(postId);
+    const post = await Post.findById(postId);
     if (!post) {
       const error = new Error("게시글을 찾을 수 없다.");
       error.statusCode = 404;
