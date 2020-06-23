@@ -118,7 +118,7 @@ async function tradeBlood(req, postId, receiveUser, next) {
       const error = new Error(
         `보낼 수 있는 헌혈증의 개수는 ${sendUser.bloods}개 입니다.`,
       );
-      error.statuscode = 401;
+      error.statusCode = 401;
       throw error;
     }
 
@@ -141,9 +141,11 @@ async function tradeBlood(req, postId, receiveUser, next) {
     receiveUser.bloods = receiveBloods.length;
     await receiveUser.save();
   } catch (err) {
+    console.log(err);
     if (!err.statusCode) {
       err.statusCode = 500;
     }
+    console.log(err);
     next(err);
   }
   req.sender = sendUser;

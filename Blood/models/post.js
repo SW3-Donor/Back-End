@@ -30,6 +30,10 @@ const postSchema = new Schema(
       required: true,
       ref: "User",
     },
+    email: {
+      type: String,
+      require: true,
+    },
   },
   { timestamps: { currentTime: () => Date.now() + 3600000 * 9 } },
 );

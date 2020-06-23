@@ -29,10 +29,13 @@ exports.writePost = async (req, res, next) => {
   const count = req.body.count;
   const user = await User.findById(req.userId);
   const name = user.name;
+  const email = user.email;
+  console.log(email);
 
   console.log("이름", name);
 
   const post = new Post({
+    email: email,
     creator: creator,
     name: name,
     title: title,
@@ -47,8 +50,6 @@ exports.writePost = async (req, res, next) => {
 
     res.status(201).json({
       message: "게시글 작성이 완료되었다.",
-      post: post,
-      creator: { _id: creator.id, name: creator.name },
     });
   } catch (err) {
     if (!err.statusCode) {
@@ -119,9 +120,7 @@ exports.updatePostId = async (req, res, next) => {
 };
 
 exports.deletePostId = async (req, res, next) => {
-  console.log(1111111111);
   const { postId } = req.params;
-  console.log("왜", postId);
   try {
     const post = await Post.findById(postId);
     console.log(post);

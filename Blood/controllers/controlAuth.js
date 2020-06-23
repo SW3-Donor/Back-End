@@ -21,6 +21,7 @@ exports.register = async (req, res, next) => {
       name: name,
       phone: phone,
       secondpassword: "-1",
+      special: "true",
       bloods: 0,
     });
     await user.save();
@@ -36,10 +37,12 @@ exports.register = async (req, res, next) => {
 
 exports.password = async (req, res, next) => {
   const authHeader = req.get("Authorization");
+  console.log(authHeader);
   let decodedToken;
   let userId;
   const password = req.body.secondpassword;
-
+  console.log(typeof authHeader.split(" ")[1]);
+  console.log(authHeader.split(" ")[1]);
   if (authHeader.split(" ")[1] != "null") {
     const token = await authHeader.split(" ")[1];
     try {

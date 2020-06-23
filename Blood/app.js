@@ -38,6 +38,8 @@ app.use((error, req, res, next) => {
   const status = error.statusCode || 500;
   const message = error.message;
   const data = error.data;
+  console.log(message);
+  console.log(status);
   res.status(status).json({ message: message, data: data });
 });
 
