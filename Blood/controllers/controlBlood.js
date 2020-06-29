@@ -66,16 +66,17 @@ exports.bloodRecord = async (req, res, next) => {
   const sender = req.sender;
   const receiver = req.receiver;
   const postId = req.postId;
-  let tradelog = [];
   try {
-    for (let i = 0; i < changeblood.length; i++) {
-      const tradeLog = new TradeLog({
-        sender: sender.email,
-        receiver: receiver.email,
-        validnumber: changeblood[i].validnumber,
-      });
-      tradelog.push(await tradeLog.save());
-    }
+    let tradelog = Promise.all(
+      changeblood.map((it) =>
+        new TradeLog({
+          sender: sender.email,
+          receiver: receiver.email,
+          validnumber: it.validnumber,
+        }).save(),
+      ),
+    );
+
     if (postId != null) {
       const post = await Post.findById(postId);
       post.received = parseInt(post.received) + changeblood.length;
@@ -129,7 +130,7 @@ async function tradeBlood(req, postId, receiveUser, next) {
     for (let i = 0; i < count; i++) {
       sendBloods[i].creator = receiveUser._id;
       changeblood.push(sendBloods[i]);
-      await sendBloods[i].save();
+      sendBloods[i].save();
     }
 
     sendBloods = await Blood.find({ creator: sendUser._id });

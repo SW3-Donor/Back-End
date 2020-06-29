@@ -30,9 +30,6 @@ exports.writePost = async (req, res, next) => {
   const user = await User.findById(req.userId);
   const name = user.name;
   const email = user.email;
-  console.log(email);
-
-  console.log("이름", name);
 
   const post = new Post({
     email: email,

@@ -15,8 +15,4 @@ router.post(
   Bloodcontrol.bloodRecord,
 );
 
-router.get("/test", (req, res, next) => {
-  res.send("This is For TEST!!!!!!!!!!!!!!!");
-});
-
 module.exports = router;
